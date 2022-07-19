@@ -1,7 +1,7 @@
 import { Application } from '@logto/schemas';
 import { demoAppApplicationId } from '@logto/schemas/lib/seeds';
 
-import { managementApi } from '@/api';
+import { authedAdminApi } from '@/api';
 
 const testApplication = {
   id: '',
@@ -11,7 +11,7 @@ const testApplication = {
 
 describe('admin console application', () => {
   it('should get application list with demo app', async () => {
-    const applications = await managementApi.get('applications').json<Application[]>();
+    const applications = await authedAdminApi.get('applications').json<Application[]>();
 
     expect(applications.length).not.toBeLessThan(1);
     const hasDemoApp = applications.some((app) => app.id === demoAppApplicationId);
@@ -19,7 +19,7 @@ describe('admin console application', () => {
   });
 
   it('should get demo app details', async () => {
-    const demoApp = await managementApi
+    const demoApp = await authedAdminApi
       .get(`applications/${demoAppApplicationId}`)
       .json<Application>();
 
@@ -27,7 +27,7 @@ describe('admin console application', () => {
   });
 
   it('should create application', async () => {
-    const application = await managementApi
+    const application = await authedAdminApi
       .post('applications', {
         json: { name: testApplication.name, type: testApplication.type },
       })
@@ -39,7 +39,7 @@ describe('admin console application', () => {
     // eslint-disable-next-line @silverhand/fp/no-mutation
     testApplication.id = application.id;
 
-    const applications = await managementApi.get('applications').json<Application[]>();
+    const applications = await authedAdminApi.get('applications').json<Application[]>();
 
     expect(applications.some((app) => app.id === application.id)).toBeTruthy();
   });
@@ -47,7 +47,7 @@ describe('admin console application', () => {
   it('should update application details', async () => {
     expect(testApplication.id).toBeTruthy();
 
-    const application = await managementApi
+    const application = await authedAdminApi
       .get(`applications/${testApplication.id}`)
       .json<Application>();
 
@@ -57,7 +57,7 @@ describe('admin console application', () => {
     const newRedirectUris = ['https://logto.dev/callback'];
     expect(application.oidcClientMetadata.redirectUris).not.toEqual(newRedirectUris);
 
-    await managementApi
+    await authedAdminApi
       .patch(`applications/${application.id}`, {
         json: {
           description: newApplicationDescription,
@@ -68,7 +68,7 @@ describe('admin console application', () => {
       })
       .json<Application>();
 
-    const updatedApplication = await managementApi
+    const updatedApplication = await authedAdminApi
       .get(`applications/${application.id}`)
       .json<Application>();
 
@@ -79,9 +79,9 @@ describe('admin console application', () => {
   it('should delete application', async () => {
     expect(testApplication.id).toBeTruthy();
 
-    await managementApi.delete(`applications/${testApplication.id}`);
+    await authedAdminApi.delete(`applications/${testApplication.id}`);
 
-    const applications = await managementApi.get('applications').json<Application[]>();
+    const applications = await authedAdminApi.get('applications').json<Application[]>();
 
     const hasTestApplication = applications.some((app) => app.id === testApplication.id);
     expect(hasTestApplication).toBeFalsy();

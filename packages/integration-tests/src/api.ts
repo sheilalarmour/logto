@@ -4,7 +4,7 @@ import { logtoUrl } from '@/constants';
 
 export default got.extend({ prefixUrl: new URL('/api', logtoUrl) });
 
-export const managementApi = got.extend({
+export const authedAdminApi = got.extend({
   prefixUrl: new URL('/api', logtoUrl),
   headers: {
     'development-user-id': 'integration-test-admin-user',
