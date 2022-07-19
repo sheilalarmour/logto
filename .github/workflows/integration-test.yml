@@ -98,7 +98,7 @@ jobs:
       # Test
       - name: Run tests
         run: |
-          cd /temp/test/packages/schemas
+          cd /tmp/test/packages/schemas
           pnpm build
           cd /tmp/tests/packages/integration-tests
           pnpm start
